@@ -1,60 +1,171 @@
 console.log("slt c moi");
 
-interface task {
-    id: number;
-    titre: string;
-    description: string;
-    date: Date;
-    etat: string;
+import { Task } from "./modules/taskModule";
+import { CategoryModule } from "./modules/categoryModule";
+
+// enum Etats {
+//     High = 'high',
+//     Medium = 'medium',
+//     Low = 'low'
+// }
+
+// interface task {
+//     id: number;
+//     titre: string;
+//     description: string;
+//     date: Date;
+//     etat: Etats;
+// }
+
+// interface Category {
+//     id: number;
+//     name: string;
+//     tasks: Task[];
+// }
+
+class TaskManager {
+  //definition des attributs pour la classe TaskManager
+  private tasks: Task[] = [];
+
+  //ajouter une tache
+  addTask(task: Task) {
+    this.tasks.push(task);
+  }
+  deleteTask(taskId: number) {
+    this.tasks = this.tasks.filter(task => task.id !== taskId);
+  }
+
+  modifyTask(taskId: number) {
+    
+  }
+
+  getTasks() {
+    return this.tasks;
+  }
 }
 
-interface category{
-    id: number;
-    name: string;
-    tasks: task[];
-}
+// class CategoryManager{
+//     private categories: Category[] = [];
 
-class TaskManager{
-    //definition des attributs pour la classe TaskManager
-    private tasks: task[] = [];
+//     addCategory(category: Category){
+//         this.categories.push(category);
+//     }
 
-    //ajouter une tache
-    addTask(task: task){
-        this.tasks.push(task);
-    }
+//     getCategories(){
+//         return this.categories;
+//     }
+// }
 
 
-    getTasks(){
-        return this.tasks;
-    }
-
-}
-
-class CategoryManager{
-    private categories: category[] = [];
-
-    addCategory(category: category){
-        this.categories.push(category);
-    }
-
-    getCategories(){
-        return this.categories;
-    }
-}
-
-
-//instanciation 
 let taskManager = new TaskManager();
-let categoryManager = new CategoryManager();
+// let categoryManager = new CategoryManager();
 
-let newTask: task = {
-    id: 1,
-    titre: "Test",
-    description: "Test",
-    date: new Date(),
-    etat: "En cours"
+function createNewTask(title: string,description: string,date: Date,etat: string): Task {
+    let newTask: Task = {
+        id: taskManager.getTasks().length + 1,
+        titre: title,
+        description: description,
+        date: date,
+        etat: etat,
+    };
+
+    return newTask;
 }
 
-taskManager.addTask(newTask);
+function createTaskElement(newTask: Task,etatString: string): HTMLElement {
+    let taskDiv = document.createElement("div");
+    taskDiv.className = `task ${newTask.etat}`;
 
-console.log(taskManager.getTasks());
+    let h3 = document.createElement("h3");
+    h3.textContent = `${newTask.titre} `;
+    let span = document.createElement("span");
+    span.textContent = `– ${etatString}`;
+    h3.appendChild(span);
+    taskDiv.appendChild(h3);
+
+    let dateP = document.createElement("p");
+    dateP.textContent = `Date d'échéance: ${newTask.date.toISOString().split("T")[0]}`;
+    taskDiv.appendChild(dateP);
+
+    let descriptionP = document.createElement("p");
+    descriptionP.textContent = `${newTask.description}`;
+    taskDiv.appendChild(descriptionP);
+
+    let deleteButton = document.createElement('button');
+    deleteButton.type = "button";
+    deleteButton.className = "deleteTask";
+    deleteButton.textContent = "Supprimer";
+    deleteButton.addEventListener('click', () => {
+        taskManager.deleteTask(newTask.id);
+        taskDiv.remove();
+    });    
+    taskDiv.appendChild(deleteButton);
+
+    let modifyButton = document.createElement('button');
+    modifyButton.className = "buttonModify, edit-btn";
+    modifyButton.textContent = "Modifier";
+    // modifyButton.addEventListener('click', modifyTask);
+    taskDiv.appendChild(modifyButton);
+
+    return taskDiv;
+}
+
+
+// event preventDefault pour empecher le rechargement de la page quand on submit le form(ca auto recharge la page directement apres avoir appuyé sur submit)
+function envoieFormulaire(event: Event) {
+    event.preventDefault();
+
+    let title = (document.querySelector("#taskTitle") as HTMLInputElement).value;
+    let description = (
+    document.querySelector("#taskDescription") as HTMLInputElement
+    ).value;
+    let date = new Date(
+    (document.querySelector("#taskDueDate") as HTMLInputElement).value
+    );
+    let etat = (document.querySelector("#taskPriority") as HTMLInputElement)
+    .value;
+
+    let newTask = createNewTask(title, description, date, etat);
+
+    console.log(`${newTask.etat}`);
+
+  //ajout de la tache à partir de la classe TaskManager
+    taskManager.addTask(newTask);
+
+    console.log(taskManager.getTasks());
+
+  //je crée une nouvelle variable qui contient l'état en string pour l'afficher dans l'html
+  //afin d éviter de mélanger "etat" pour le rapeler dans la classe css et "etatString" pour l'afficher en texte dans l'html
+    let etatString: string;
+    if (etat === "high") {
+    etatString = "Priorité haute";
+    } 
+    else if (etat === "medium") {
+    etatString = "Priorité moyenne";
+    } 
+    else {
+    etatString = "Priorité basse";
+    }
+
+    let taskElement = createTaskElement(newTask, etatString);
+    let tasksDiv = document.getElementById("tasks");
+    tasksDiv!.appendChild(taskElement);
+}
+
+
+
+document.querySelector("#taskForm")!.addEventListener("submit", envoieFormulaire);
+
+
+//
+//FILTRES
+//
+
+// function filtreTask(){
+//     let filterValuePriority = document.querySelector("#filterPriority") as HTMLInputElement;
+
+//     let tasks = taskManager.getTasks();
+
+// }
+
+// document.querySelector("#applyFilter")!.addEventListener("submit", filtreTask);

@@ -60,32 +60,58 @@
                         <h3>Titre de la Tâche 1 <span>– Priorité Haute</span></h3>
                         <p>Date d'échéance: 2024-03-01</p>
                         <p>Description de la tâche 1...</p>
-                        <button type="button">Supprimer</button>
+                        <button type="button" class="deleteTask">Supprimer</button>
                         <button class="edit-btn">Modifier</button>
                     </div>
                     <div class="task medium">
                         <h3>Titre de la Tâche 2 <span>– Priorité Moyenne</span></h3>
                         <p>Date d'échéance: 2024-03-05</p>
                         <p>Description de la tâche 2...</p>
-                        <button type="button">Supprimer</button>
+                        <button type="button" class="deleteTask">Supprimer</button>
                         <button class="edit-btn">Modifier</button>
                     </div>
                     <div class="task low">
                         <h3>Titre de la Tâche 3 <span>– Priorité Faible</span></h3>
                         <p>Date d'échéance: 2024-03-10</p>
                         <p>Description de la tâche 3...</p>
-                        <button type="button">Supprimer</button>
+                        <button type="button" class="deleteTask">Supprimer</button>
                         <button class="edit-btn">Modifier</button>
                     </div>
                 </div>
 
             </div>
         </section>
+
+
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <h2>Edit Task</h2>
+                <form id="editForm">
+                    <label for="editTitle">Title:</label>
+                    <input id="editTitle" type="text" name="title">
+        
+                    <label for="editDescription">Description:</label>
+                    <textarea id="editDescription" name="description"></textarea>
+        
+                    <label for="editDate">Date:</label>
+                    <input id="editDate" type="date" name="date">
+        
+                    <label for="editEtat">Etat:</label>
+                    <select id="editEtat" name="etat">
+                        <option value="todo">To Do</option>
+                        <option value="inprogress">In Progress</option>
+                        <option value="done">Done</option>
+                    </select>
+        
+                    <input type="submit" value="Save">
+                </form>
+            </div>
+        </div>
     </main>
     <footer>
         <p>&copy; 2024 Application de Gestion de Tâches</p>
     </footer>
-    <script src="/main.js"></script>
+    <script src="/main.js" type="module"></script>
 </body>
 
 </html>
