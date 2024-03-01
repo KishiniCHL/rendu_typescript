@@ -11,13 +11,13 @@ let title: string;
 let description: string;
 let date: Date;
 let etat: string;
-let category: string = "Travail";
+// let category: string = "Travail";
 
 //START LOCAL STORAGE//
 //
 function saveTasks() {
   const tasks = taskManager.getTasks();
-  console.log('Saving tasks:', tasks);
+  console.log('sauvegardes tâches :', tasks);
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
@@ -25,7 +25,6 @@ function loadTasks(): Task[] {
   const taskJSON = localStorage.getItem("tasks");
   if (taskJSON === null) return [];
   const tasks = JSON.parse(taskJSON);
-  console.log('Loaded tasks:', tasks);
   return tasks;
 }
 
@@ -47,35 +46,35 @@ tasks.forEach(task => {
 //START ENVOIE FORMULAIRE//
 //
 document.querySelector("#taskForm")!.addEventListener("submit", function (event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    title = (document.querySelector("#taskTitle") as HTMLInputElement).value;
-    description = (document.querySelector("#taskDescription") as HTMLInputElement).value;
-    date = new Date((document.querySelector("#taskDueDate") as HTMLInputElement).value);
-    etat = (document.querySelector("#taskPriority") as HTMLInputElement).value;
-    // category = (document.querySelector("#taskCategory") as HTMLInputElement).value;
+  title = (document.querySelector("#taskTitle") as HTMLInputElement).value;
+  description = (document.querySelector("#taskDescription") as HTMLInputElement).value;
+  date = new Date((document.querySelector("#taskDueDate") as HTMLInputElement).value);
+  etat = (document.querySelector("#taskPriority") as HTMLInputElement).value;
+  // category = (document.querySelector("#taskCategory") as HTMLInputElement).value;
 
-    if (title && description && date && etat) {
-      createNewTask(title, description, date, etat);
-      envoieFormulaire(event);
+  if (title && description && date && etat) {
+    createNewTask(title, description, date, etat);
+    envoieFormulaire(event);
   } else {
-      alert("Veuillez remplir tous les champs");
+    alert("Veuillez remplir tous les champs");
   }
 });
 
 function createNewTask(title: string, description: string, date: Date, etat: string): Task {
 
-  
-    let newTask: Task = {
-        id: taskManager.getTasks().length + 1,
-        titre: title,
-        description: description,
-        date: date,
-        etat: etat,
-        // categorie: category
-    };
 
-    return newTask;
+  let newTask: Task = {
+    id: taskManager.getTasks().length + 1,
+    titre: title,
+    description: description,
+    date: date,
+    etat: etat,
+    // categorie: category
+  };
+
+  return newTask;
 }
 
 
@@ -85,7 +84,7 @@ function envoieFormulaire(event: Event) {
 
   let newTask = createNewTask(title, description, date, etat);
 
-//ajout de la tache à partir de la classe TaskManager
+  //ajout de la tache à partir de la classe TaskManager
   taskManager.addTask(newTask);
   saveTasks();
 
@@ -111,16 +110,16 @@ function createTaskElement(newTask: Task): HTMLElement {
   taskDiv.className = `task ${newTask.etat}`;
 
 
-  
+
   //je crée une nouvelle variable qui contient l'état en string pour l'afficher dans l'html
   //afin d éviter de mélanger "etat" pour le rapeler dans la classe css et "etatString" pour l'afficher en texte dans l'html
   let etatString: string;
   if (newTask.etat === "high") {
     etatString = "Priorité haute";
-  } 
+  }
   else if (newTask.etat === "medium") {
     etatString = "Priorité moyenne";
-  } 
+  }
   else {
     etatString = "Priorité basse";
   }
@@ -150,11 +149,11 @@ function createTaskElement(newTask: Task): HTMLElement {
   deleteButton.className = "deleteTask";
   deleteButton.textContent = "Supprimer";
   deleteButton.addEventListener('click', () => {
-      taskManager.deleteTask(newTask.id);
-      taskDiv.remove();
-      saveTasks();
-      console.log(taskManager.getTasks());
-  });    
+    taskManager.deleteTask(newTask.id);
+    taskDiv.remove();
+    saveTasks();
+    console.log(taskManager.getTasks());
+  });
   taskDiv.appendChild(deleteButton);
 
 
@@ -163,15 +162,15 @@ function createTaskElement(newTask: Task): HTMLElement {
   modifyButton.textContent = "Modifier";
   modifyButton.addEventListener('click', () => {
     toggleModal();
-  preFillForm(newTask.id);
+    preFillForm(newTask.id);
 
-  let updateForm = document.querySelector("#updateForm") as HTMLFormElement;
+    let updateForm = document.querySelector("#updateForm") as HTMLFormElement;
 
-  updateForm.addEventListener("submit", function(event) {
-    updateTask(event);
+    updateForm.addEventListener("submit", function (event) {
+      updateTask(event);
+    });
   });
-  });
-  
+
   taskDiv.appendChild(modifyButton);
 
   return taskDiv;
@@ -187,7 +186,7 @@ let closeButton = document.querySelector(".close") as HTMLElement;
 
 
 function toggleModal() {
-    modal.style.display = modal.style.display === "none" ? "block" : "none";
+  modal.style.display = modal.style.display === "none" ? "block" : "none";
 }
 
 closeButton.addEventListener("click", toggleModal);
@@ -223,7 +222,7 @@ function updateTask(event: Event) {
   let date = new Date((document.querySelector("#updateDate") as HTMLInputElement).value);
   let etat = (document.querySelector("#updateEtat") as HTMLSelectElement).value;
   // let category = (document.querySelector("#updateCategory") as HTMLSelectElement).value;
-  
+
   taskManager.updateTask(taskId, title, description, date, etat);
   console.log(taskManager.getTasks());
 
@@ -236,7 +235,7 @@ updateForm.addEventListener("submit", updateTask);
 
 
 //DEBUT CATEGORIES//
-
+//
 let categoryManager = new CategoryManager();
 
 document.querySelector("#addCategory")!.addEventListener("click", function (event) {
@@ -245,17 +244,17 @@ document.querySelector("#addCategory")!.addEventListener("click", function (even
   let categoryName = (document.querySelector("#categoryTitle") as HTMLInputElement).value;
 
   if (categoryName) {
-      addCategory(categoryName);
+    addCategory(categoryName);
   } else {
-      alert("Veuillez entrer le nom de la catégorie");
+    alert("Veuillez entrer le nom de la catégorie");
   }
 });
 
 function addCategory(categoryName: string) {
   let category: Category = {
-      id: categoryManager.getCategories().length + 1,
-      name: categoryName,
-      tasks: []
+    id: categoryManager.getCategories().length + 1,
+    name: categoryName,
+    tasks: []
   };
 
   categoryManager.addCategory(category);
@@ -270,10 +269,10 @@ function updateCategoryOptions() {
 
   // Add updated options
   categoryManager.getCategories().forEach(category => {
-      let option = document.createElement("option");
-      option.value = category.name;
-      option.textContent = category.name;
-      taskCategorySelect.appendChild(option);
+    let option = document.createElement("option");
+    option.value = category.name;
+    option.textContent = category.name;
+    taskCategorySelect.appendChild(option);
   });
 }
 //
@@ -287,7 +286,7 @@ function filtreTask() {
   let filterValuePriorityElement = document.querySelector("#filterPriority") as HTMLInputElement;
 
   let filterValuePriority = filterValuePriorityElement.value;
-  
+
   console.log(filterValuePriority);
 
 

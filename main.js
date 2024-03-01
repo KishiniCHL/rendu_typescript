@@ -5,12 +5,12 @@ let title;
 let description;
 let date;
 let etat;
-let category = "Travail";
+// let category: string = "Travail";
 //START LOCAL STORAGE//
 //
 function saveTasks() {
     const tasks = taskManager.getTasks();
-    console.log('Saving tasks:', tasks);
+    console.log('sauvegardes tâches :', tasks);
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 function loadTasks() {
@@ -18,7 +18,6 @@ function loadTasks() {
     if (taskJSON === null)
         return [];
     const tasks = JSON.parse(taskJSON);
-    console.log('Loaded tasks:', tasks);
     return tasks;
 }
 const tasks = loadTasks();
@@ -174,6 +173,7 @@ updateForm.addEventListener("submit", updateTask);
 //
 ////FIN UPDATE TACHE////
 //DEBUT CATEGORIES//
+//
 let categoryManager = new CategoryManager();
 document.querySelector("#addCategory").addEventListener("click", function (event) {
     event.preventDefault();
