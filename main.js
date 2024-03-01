@@ -1,21 +1,4 @@
 console.log("slt c moi");
-// enum Etats {
-//     High = 'high',
-//     Medium = 'medium',
-//     Low = 'low'
-// }
-// interface task {
-//     id: number;
-//     titre: string;
-//     description: string;
-//     date: Date;
-//     etat: Etats;
-// }
-// interface Category {
-//     id: number;
-//     name: string;
-//     tasks: Task[];
-// }
 class TaskManager {
     //definition des attributs pour la classe TaskManager
     tasks = [];
@@ -26,7 +9,14 @@ class TaskManager {
     deleteTask(taskId) {
         this.tasks = this.tasks.filter(task => task.id !== taskId);
     }
-    modifyTask(taskId) {
+    updateTask(taskId, title, description, date, etat) {
+        let task = this.tasks.find(task => task.id === taskId);
+        if (task) {
+            task.titre = title;
+            task.description = description;
+            task.date = date;
+            task.etat = etat;
+        }
     }
     getTasks() {
         return this.tasks;
@@ -77,10 +67,13 @@ function createTaskElement(newTask, etatString) {
         taskDiv.remove();
     });
     taskDiv.appendChild(deleteButton);
+    let modal = document.querySelector(".modal");
     let modifyButton = document.createElement('button');
     modifyButton.className = "buttonModify, edit-btn";
     modifyButton.textContent = "Modifier";
-    // modifyButton.addEventListener('click', modifyTask);
+    modifyButton.addEventListener('click', () => {
+        modal.style.display = "block";
+    });
     taskDiv.appendChild(modifyButton);
     return taskDiv;
 }
@@ -93,7 +86,6 @@ function envoieFormulaire(event) {
     let etat = document.querySelector("#taskPriority")
         .value;
     let newTask = createNewTask(title, description, date, etat);
-    console.log(`${newTask.etat}`);
     //ajout de la tache à partir de la classe TaskManager
     taskManager.addTask(newTask);
     console.log(taskManager.getTasks());
@@ -113,13 +105,26 @@ function envoieFormulaire(event) {
     let tasksDiv = document.getElementById("tasks");
     tasksDiv.appendChild(taskElement);
 }
+function updateTask(event, taskId) {
+    event.preventDefault();
+    let title = document.querySelector("#updateTitle").value;
+    let description = document.querySelector("#updateDescription").value;
+    let date = new Date(document.querySelector("#updateDate").value);
+    let etat = document.querySelector("#updateEtat").value;
+    taskManager.updateTask(taskId, title, description, date, etat);
+    console.log(taskManager.getTasks());
+}
+let updateForm = document.querySelector("#updateForm");
+updateForm.addEventListener("submit", updateTask);
 document.querySelector("#taskForm").addEventListener("submit", envoieFormulaire);
-export {};
 //
 //FILTRES
 //
-// function filtreTask(){
-//     let filterValuePriority = document.querySelector("#filterPriority") as HTMLInputElement;
-//     let tasks = taskManager.getTasks();
-// }
-// document.querySelector("#applyFilter")!.addEventListener("submit", filtreTask);
+function filtreTask() {
+    let filterValuePriorityElement = document.querySelector("#filterPriority");
+    let filterValuePriority = filterValuePriorityElement.value;
+    console.log(filterValuePriority);
+    // let tasks = taskManager.getTasks();
+}
+document.querySelector("#applyFilter").addEventListener("submit", filtreTask);
+export {};

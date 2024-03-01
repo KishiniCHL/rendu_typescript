@@ -3,25 +3,7 @@ console.log("slt c moi");
 import { Task } from "./modules/taskModule";
 import { CategoryModule } from "./modules/categoryModule";
 
-// enum Etats {
-//     High = 'high',
-//     Medium = 'medium',
-//     Low = 'low'
-// }
 
-// interface task {
-//     id: number;
-//     titre: string;
-//     description: string;
-//     date: Date;
-//     etat: Etats;
-// }
-
-// interface Category {
-//     id: number;
-//     name: string;
-//     tasks: Task[];
-// }
 
 class TaskManager {
   //definition des attributs pour la classe TaskManager
@@ -35,7 +17,14 @@ class TaskManager {
     this.tasks = this.tasks.filter(task => task.id !== taskId);
   }
 
-  modifyTask(taskId: number) {
+  updateTask(taskId: number, title: string, description: string, date: Date, etat: string) {
+    let task = this.tasks.find(task => task.id === taskId);
+    if (task) {
+      task.titre = title;
+      task.description = description;
+      task.date = date;
+      task.etat = etat;
+    }
     
   }
 
@@ -101,14 +90,20 @@ function createTaskElement(newTask: Task,etatString: string): HTMLElement {
     });    
     taskDiv.appendChild(deleteButton);
 
+    let modal = document.querySelector(".modal") as HTMLElement;
+
     let modifyButton = document.createElement('button');
     modifyButton.className = "buttonModify, edit-btn";
     modifyButton.textContent = "Modifier";
-    // modifyButton.addEventListener('click', modifyTask);
+    modifyButton.addEventListener('click', () => {
+      modal.style.display = "block";      
+    });
+    
     taskDiv.appendChild(modifyButton);
 
     return taskDiv;
 }
+
 
 
 // event preventDefault pour empecher le rechargement de la page quand on submit le form(ca auto recharge la page directement apres avoir appuyé sur submit)
@@ -126,8 +121,6 @@ function envoieFormulaire(event: Event) {
     .value;
 
     let newTask = createNewTask(title, description, date, etat);
-
-    console.log(`${newTask.etat}`);
 
   //ajout de la tache à partir de la classe TaskManager
     taskManager.addTask(newTask);
@@ -153,6 +146,18 @@ function envoieFormulaire(event: Event) {
 }
 
 
+function updateTask(event: Event) {
+  event.preventDefault();
+  let title = (document.querySelector("#updateTitle") as HTMLInputElement).value;
+  let description = (document.querySelector("#updateDescription") as HTMLInputElement).value;
+  let date = new Date((document.querySelector("#updateDate") as HTMLInputElement).value);
+  let etat = (document.querySelector("#updateEtat") as HTMLInputElement).value;
+  taskManager.updateTask(taskId, title, description, date, etat);
+  console.log(taskManager.getTasks());
+}
+let updateForm = document.querySelector("#updateForm") as HTMLElement;
+
+updateForm.addEventListener("submit", updateTask);
 
 document.querySelector("#taskForm")!.addEventListener("submit", envoieFormulaire);
 
@@ -161,11 +166,15 @@ document.querySelector("#taskForm")!.addEventListener("submit", envoieFormulaire
 //FILTRES
 //
 
-// function filtreTask(){
-//     let filterValuePriority = document.querySelector("#filterPriority") as HTMLInputElement;
+function filtreTask(){
+    let filterValuePriorityElement = document.querySelector("#filterPriority") as HTMLInputElement;
 
-//     let tasks = taskManager.getTasks();
+    let filterValuePriority = filterValuePriorityElement.value;
+    
+    console.log(filterValuePriority);
 
-// }
+    // let tasks = taskManager.getTasks();
 
-// document.querySelector("#applyFilter")!.addEventListener("submit", filtreTask);
+}
+
+document.querySelector("#applyFilter")!.addEventListener("submit", filtreTask);

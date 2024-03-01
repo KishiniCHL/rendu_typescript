@@ -55,7 +55,7 @@
             <h2>Liste des Tâches</h2>
             <div id="tasks">
 
-                <div id="tasks">
+                <!-- <div id="tasks">
                     <div class="task high">
                         <h3>Titre de la Tâche 1 <span>– Priorité Haute</span></h3>
                         <p>Date d'échéance: 2024-03-01</p>
@@ -77,30 +77,30 @@
                         <button type="button" class="deleteTask">Supprimer</button>
                         <button class="edit-btn">Modifier</button>
                     </div>
-                </div>
+                </div> -->
 
             </div>
         </section>
 
 
-        <div id="editModal" class="modal">
+        <div id="updateModal" class="modal">
             <div class="modal-content">
-                <h2>Edit Task</h2>
-                <form id="editForm">
-                    <label for="editTitle">Title:</label>
-                    <input id="editTitle" type="text" name="title">
+                <h2>Modifier la tâche</h2>
+                <form id="updateForm">
+                    <label for="updateTitle">Titre:</label>
+                    <input id="updateTitle" type="text" name="title">
         
-                    <label for="editDescription">Description:</label>
-                    <textarea id="editDescription" name="description"></textarea>
+                    <label for="updateDescription">Description:</label>
+                    <textarea id="updateDescription" name="description"></textarea>
         
-                    <label for="editDate">Date:</label>
-                    <input id="editDate" type="date" name="date">
+                    <label for="updateDate">Date:</label>
+                    <input id="updateDate" type="date" name="date">
         
-                    <label for="editEtat">Etat:</label>
-                    <select id="editEtat" name="etat">
-                        <option value="todo">To Do</option>
-                        <option value="inprogress">In Progress</option>
-                        <option value="done">Done</option>
+                    <label for="updateEtat">Etat:</label>
+                    <select id="updateEtat" name="etat">
+                        <option value="low">Faible</option>
+                        <option value="medium" selected>Moyenne</option>
+                        <option value="high">Haute</option>
                     </select>
         
                     <input type="submit" value="Save">
