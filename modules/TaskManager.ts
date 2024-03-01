@@ -1,4 +1,5 @@
 import { Task } from "./taskModule";
+import { Category } from "./categoryModule";
 
 
 export class TaskManager {
@@ -16,14 +17,14 @@ export class TaskManager {
     updateTask(taskId: number, title: string, description: string, date: Date, etat: string) {
       let task = this.tasks.find(task => task.id === taskId);
       if (task) {
-        task.titre = title;
-        task.description = description;
-        task.date = date;
-        task.etat = etat;
+          task.titre = title;
+          task.description = description;
+          task.date = date;
+          task.etat = etat;
+          // task.categorie = category;
       }
-      
-    }
-  
+   }
+
     getTasks() {
       return this.tasks;
     }

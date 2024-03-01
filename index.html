@@ -23,8 +23,12 @@
             <h2>Ajouter une Tâche</h2>
             <form id="taskForm">
                 <input type="text" id="taskTitle" placeholder="Titre de la tâche" required>
+                <select id="taskCategory" required>
+                    <option value="">Choisir une catégorie</option>
+                    <option value="travail">Travail</option>
+                </select>
                 <textarea id="taskDescription" placeholder="Description de la tâche"></textarea>
-                <input type="date" id="taskDueDate">
+                <input type="date" id="taskDueDate" required>
                 <select id="taskPriority">
                     <option value="low">Faible</option>
                     <option value="medium" selected>Moyenne</option>
@@ -33,6 +37,12 @@
                 <button type="submit">Ajouter Tâche</button>
             </form>
         </section>
+
+        <section>
+            <input type="text" id="categoryTitle" placeholder="Categorie" required>
+            <button type="submit" id="addCategory">Ajouter Categorie</button>
+        </section>
+
         <section id="task-filter">
             <h2>Filtrer les Tâches</h2>
             <form id="filterForm">
@@ -93,6 +103,8 @@
                     <input type="hidden" id="updateTaskId">
                     <label for="updateTitle">Titre:</label>
                     <input id="updateTitle" type="text" name="title">
+
+                    <label for="updateCategory">Category:</label>
         
                     <label for="updateDescription">Description:</label>
                     <textarea id="updateDescription" name="description"></textarea>
@@ -106,6 +118,8 @@
                         <option value="medium" selected>Moyenne</option>
                         <option value="high">Haute</option>
                     </select>
+
+                    
         
                     <input type="submit" value="Save" id="updateTaskButton">
                 </form>

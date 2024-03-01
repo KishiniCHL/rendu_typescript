@@ -15,6 +15,7 @@ export class TaskManager {
             task.description = description;
             task.date = date;
             task.etat = etat;
+            // task.categorie = category;
         }
     }
     getTasks() {

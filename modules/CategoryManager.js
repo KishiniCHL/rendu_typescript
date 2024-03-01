@@ -1,10 +1,9 @@
-"use strict";
-// class CategoryManager{
-//     private categories: Category[] = [];
-//     addCategory(category: Category){
-//         this.categories.push(category);
-//     }
-//     getCategories(){
-//         return this.categories;
-//     }
-// }
+export class CategoryManager {
+    categories = [];
+    addCategory(category) {
+        this.categories.push(category);
+    }
+    getCategories() {
+        return this.categories;
+    }
+}

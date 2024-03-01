@@ -1,10 +1,13 @@
 import { TaskManager } from "./modules/TaskManager.js";
+import { CategoryManager } from "./modules/CategoryManager.js";
 let taskManager = new TaskManager();
 let title;
 let description;
 let date;
 let etat;
+let category = "Travail";
 //START LOCAL STORAGE//
+//
 function saveTasks() {
     const tasks = taskManager.getTasks();
     console.log('Saving tasks:', tasks);
@@ -27,16 +30,17 @@ tasks.forEach(task => {
     let tasksDiv = document.querySelector("#tasks");
     tasksDiv.appendChild(taskElement);
 });
+//
 //FIN LOCAL STORAGE//
 //START ENVOIE FORMULAIRE//
 //
 document.querySelector("#taskForm").addEventListener("submit", function (event) {
     event.preventDefault();
-    // Move these lines inside the event handler
     title = document.querySelector("#taskTitle").value;
     description = document.querySelector("#taskDescription").value;
     date = new Date(document.querySelector("#taskDueDate").value);
     etat = document.querySelector("#taskPriority").value;
+    // category = (document.querySelector("#taskCategory") as HTMLInputElement).value;
     if (title && description && date && etat) {
         createNewTask(title, description, date, etat);
         envoieFormulaire(event);
@@ -52,6 +56,7 @@ function createNewTask(title, description, date, etat) {
         description: description,
         date: date,
         etat: etat,
+        // categorie: category
     };
     return newTask;
 }
@@ -67,6 +72,7 @@ function envoieFormulaire(event) {
     let tasksDiv = document.querySelector("#tasks");
     tasksDiv.appendChild(taskElement);
 }
+//
 //FIN ENVOIE FORMULAIRE//
 // START AFFICHAGE TACHE//
 //
@@ -94,13 +100,11 @@ function createTaskElement(newTask) {
     h3.appendChild(span);
     taskDiv.appendChild(h3);
     let dateP = document.createElement("p");
-    if (isValidDate) {
-        dateP.textContent = `Date d'échéance: ${date.toISOString().split("T")[0]}`;
-    }
-    else {
-        dateP.textContent = `Date d'échéance: Invalid date`;
-    }
+    dateP.textContent = `Date d'échéance: ${date.toISOString().split("T")[0]}`;
     taskDiv.appendChild(dateP);
+    let category = document.createElement("p");
+    // category.textContent = `Categorie : ${newTask.categorie}`;
+    taskDiv.appendChild(category);
     let descriptionP = document.createElement("p");
     descriptionP.textContent = `${newTask.description}`;
     taskDiv.appendChild(descriptionP);
@@ -138,6 +142,7 @@ function toggleModal() {
     modal.style.display = modal.style.display === "none" ? "block" : "none";
 }
 closeButton.addEventListener("click", toggleModal);
+//
 //FIN MODAL//
 //UPDATE TACHE //
 //
@@ -160,14 +165,50 @@ function updateTask(event) {
     let description = document.querySelector("#updateDescription").value;
     let date = new Date(document.querySelector("#updateDate").value);
     let etat = document.querySelector("#updateEtat").value;
+    // let category = (document.querySelector("#updateCategory") as HTMLSelectElement).value;
     taskManager.updateTask(taskId, title, description, date, etat);
     console.log(taskManager.getTasks());
 }
 let updateForm = document.querySelector("#updateForm");
 updateForm.addEventListener("submit", updateTask);
-////FIN UPDATE TACHE////
 //
-//FILTRES
+////FIN UPDATE TACHE////
+//DEBUT CATEGORIES//
+let categoryManager = new CategoryManager();
+document.querySelector("#addCategory").addEventListener("click", function (event) {
+    event.preventDefault();
+    let categoryName = document.querySelector("#categoryTitle").value;
+    if (categoryName) {
+        addCategory(categoryName);
+    }
+    else {
+        alert("Veuillez entrer le nom de la catégorie");
+    }
+});
+function addCategory(categoryName) {
+    let category = {
+        id: categoryManager.getCategories().length + 1,
+        name: categoryName,
+        tasks: []
+    };
+    categoryManager.addCategory(category);
+    updateCategoryOptions();
+}
+function updateCategoryOptions() {
+    let taskCategorySelect = document.querySelector("#taskCategory");
+    // Clear existing options
+    taskCategorySelect.innerHTML = '<option value="">Choisir une catégorie</option>';
+    // Add updated options
+    categoryManager.getCategories().forEach(category => {
+        let option = document.createElement("option");
+        option.value = category.name;
+        option.textContent = category.name;
+        taskCategorySelect.appendChild(option);
+    });
+}
+//
+//FIN CATEGORIES
+// DEBUT FILTRES
 //
 function filtreTask() {
     let filterValuePriorityElement = document.querySelector("#filterPriority");
@@ -175,3 +216,5 @@ function filtreTask() {
     console.log(filterValuePriority);
 }
 document.querySelector("#applyFilter").addEventListener("submit", filtreTask);
+//
+//FIN FILTRES//

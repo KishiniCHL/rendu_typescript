@@ -1,12 +1,14 @@
+import { Category } from './categoryModule';
 
-// class CategoryManager{
-//     private categories: Category[] = [];
 
-//     addCategory(category: Category){
-//         this.categories.push(category);
-//     }
+export class CategoryManager{
+    private categories: Category[] = [];
 
-//     getCategories(){
-//         return this.categories;
-//     }
-// }
+    addCategory(category: Category): void{
+        this.categories.push(category);
+    }
+
+    getCategories(){
+        return this.categories;
+    }
+}
