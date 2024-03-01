@@ -1,5 +1,3 @@
-console.log("slt c moi");
-
 import { Task } from "./modules/taskModule";
 import { CategoryModule } from "./modules/categoryModule";
 import { TaskManager } from "./modules/TaskManager.js";
@@ -11,6 +9,37 @@ let description: string;
 let date: Date;
 let etat: string;
 
+//START LOCAL STORAGE//
+function saveTasks() {
+  const tasks = taskManager.getTasks();
+  console.log('Saving tasks:', tasks);
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function loadTasks(): Task[] {
+  const taskJSON = localStorage.getItem("tasks");
+  if (taskJSON === null) return [];
+  const tasks = JSON.parse(taskJSON);
+  console.log('Loaded tasks:', tasks);
+  return tasks;
+}
+
+const tasks: Task[] = loadTasks();
+tasks.forEach(task => {
+  //ajouter chaque tache à partir de la TaskManager
+  taskManager.addTask(task);
+
+  //creer un element pour chaque tache dans le local storage
+  let taskElement = createTaskElement(task);
+
+  let tasksDiv = document.querySelector("#tasks");
+  tasksDiv!.appendChild(taskElement);
+});
+//FIN LOCAL STORAGE//
+
+
+//START ENVOIE FORMULAIRE//
+//
 document.querySelector("#taskForm")!.addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -23,14 +52,16 @@ document.querySelector("#taskForm")!.addEventListener("submit", function (event)
     if (title && description && date && etat) {
         createNewTask(title, description, date, etat);
         envoieFormulaire(event);
+
+
     } else {
         alert("Veuillez remplir tous les champs");
     }
 });
 
+function createNewTask(title: string, description: string, date: Date, etat: string): Task {
 
-
-function createNewTask(title: string,description: string,date: Date,etat: string): Task {
+  
     let newTask: Task = {
         id: taskManager.getTasks().length + 1,
         titre: title,
@@ -42,13 +73,54 @@ function createNewTask(title: string,description: string,date: Date,etat: string
     return newTask;
 }
 
-function createTaskElement(newTask: Task, etatString: string): HTMLElement {
+
+
+
+// event preventDefault pour empecher le rechargement de la page quand on submit le form(ca auto recharge la page directement apres avoir appuyé sur submit)
+function envoieFormulaire(event: Event) {
+  event.preventDefault();
+
+  let newTask = createNewTask(title, description, date, etat);
+
+//ajout de la tache à partir de la classe TaskManager
+  taskManager.addTask(newTask);
+  saveTasks();
+
+  console.log(taskManager.getTasks());
+
+  let taskElement = createTaskElement(newTask);
+  let tasksDiv = document.querySelector("#tasks");
+  tasksDiv!.appendChild(taskElement);
+}
+
+//FIN ENVOIE FORMULAIRE//
+
+
+// START AFFICHAGE TACHE//
+//
+function createTaskElement(newTask: Task): HTMLElement {
+
   let taskDiv = document.createElement("div");
 
   let date = new Date(newTask.date);
   let isValidDate = !isNaN(date.getTime());
 
   taskDiv.className = `task ${newTask.etat}`;
+
+
+  
+  //je crée une nouvelle variable qui contient l'état en string pour l'afficher dans l'html
+  //afin d éviter de mélanger "etat" pour le rapeler dans la classe css et "etatString" pour l'afficher en texte dans l'html
+  let etatString: string;
+  if (newTask.etat === "high") {
+    etatString = "Priorité haute";
+  } 
+  else if (newTask.etat === "medium") {
+    etatString = "Priorité moyenne";
+  } 
+  else {
+    etatString = "Priorité basse";
+  }
 
   let h3 = document.createElement("h3");
   h3.textContent = `${newTask.titre} `;
@@ -76,16 +148,24 @@ function createTaskElement(newTask: Task, etatString: string): HTMLElement {
   deleteButton.addEventListener('click', () => {
       taskManager.deleteTask(newTask.id);
       taskDiv.remove();
+      saveTasks();
+      console.log(taskManager.getTasks());
   });    
   taskDiv.appendChild(deleteButton);
 
-  let modal = document.querySelector(".modal") as HTMLElement;
 
   let modifyButton = document.createElement('button');
   modifyButton.className = "buttonModify, edit-btn";
   modifyButton.textContent = "Modifier";
   modifyButton.addEventListener('click', () => {
-    modal.style.display = "block";      
+    toggleModal();
+  preFillForm(newTask.id);
+
+  let updateForm = document.querySelector("#updateForm") as HTMLFormElement;
+
+  updateForm.addEventListener("submit", function(event) {
+    updateTask(event);
+  });
   });
   
   taskDiv.appendChild(modifyButton);
@@ -93,66 +173,76 @@ function createTaskElement(newTask: Task, etatString: string): HTMLElement {
   return taskDiv;
 }
 
+//FIN AFFICHAGE TACHE//
 
 
-// event preventDefault pour empecher le rechargement de la page quand on submit le form(ca auto recharge la page directement apres avoir appuyé sur submit)
-function envoieFormulaire(event: Event) {
-    event.preventDefault();
+//DEBUT MODAL//
+//
+let modal = document.querySelector(".modal") as HTMLElement;
+let closeButton = document.querySelector(".close") as HTMLElement;
 
-    let newTask = createNewTask(title, description, date, etat);
 
-  //ajout de la tache à partir de la classe TaskManager
-    taskManager.addTask(newTask);
-
-    console.log(taskManager.getTasks());
-
-  //je crée une nouvelle variable qui contient l'état en string pour l'afficher dans l'html
-  //afin d éviter de mélanger "etat" pour le rapeler dans la classe css et "etatString" pour l'afficher en texte dans l'html
-    let etatString: string;
-    if (etat === "high") {
-    etatString = "Priorité haute";
-    } 
-    else if (etat === "medium") {
-    etatString = "Priorité moyenne";
-    } 
-    else {
-    etatString = "Priorité basse";
-    }
-
-    let taskElement = createTaskElement(newTask, etatString);
-    let tasksDiv = document.getElementById("tasks");
-    tasksDiv!.appendChild(taskElement);
+function toggleModal() {
+    modal.style.display = modal.style.display === "none" ? "block" : "none";
 }
 
+closeButton.addEventListener("click", toggleModal);
+//FIN MODAL//
 
-// function updateTask(event: Event) {
-//   event.preventDefault();
-//   let title = (document.querySelector("#updateTitle") as HTMLInputElement).value;
-//   let description = (document.querySelector("#updateDescription") as HTMLInputElement).value;
-//   let date = new Date((document.querySelector("#updateDate") as HTMLInputElement).value);
-//   let etat = (document.querySelector("#updateEtat") as HTMLInputElement).value;
-//   taskManager.updateTask(taskId, title, description, date, etat);
-//   console.log(taskManager.getTasks());
-// }
-let updateForm = document.querySelector("#updateForm") as HTMLElement;
 
-// updateForm.addEventListener("submit", updateTask);
+//UPDATE TACHE //
+//
 
+
+function preFillForm(taskId: number) {
+  const task = taskManager.getTasks().find(task => task.id === taskId);
+
+  // remplir en avance le formulaire avec les valeurs de la tache
+  if (task) {
+    (document.getElementById("updateTitle") as HTMLInputElement).value = task.titre;
+    (document.getElementById("updateDescription") as HTMLTextAreaElement).value = task.description;
+    (document.getElementById("updateDate") as HTMLInputElement).value = task.date.toISOString().split("T")[0];
+    (document.getElementById("updateEtat") as HTMLSelectElement).value = task.etat;
+
+    //input pour save l'id 
+    (document.querySelector("#updateTaskId") as HTMLInputElement).value = taskId.toString();
+  }
+}
+
+function updateTask(event: Event) {
+  event.preventDefault();
+
+  let taskId = parseInt((document.querySelector("#updateTaskId") as HTMLInputElement).value);
+
+  let title = (document.querySelector("#updateTitle") as HTMLInputElement).value;
+  let description = (document.querySelector("#updateDescription") as HTMLTextAreaElement).value;
+  let date = new Date((document.querySelector("#updateDate") as HTMLInputElement).value);
+  let etat = (document.querySelector("#updateEtat") as HTMLSelectElement).value;
+  
+  taskManager.updateTask(taskId, title, description, date, etat);
+  console.log(taskManager.getTasks());
+  
+}
+
+let updateForm = document.querySelector("#updateForm") as HTMLFormElement;
+updateForm.addEventListener("submit", updateTask);
+
+////FIN UPDATE TACHE////
 
 
 //
 //FILTRES
 //
 
-function filtreTask(){
-    let filterValuePriorityElement = document.querySelector("#filterPriority") as HTMLInputElement;
+function filtreTask() {
+  let filterValuePriorityElement = document.querySelector("#filterPriority") as HTMLInputElement;
 
-    let filterValuePriority = filterValuePriorityElement.value;
-    
-    console.log(filterValuePriority);
+  let filterValuePriority = filterValuePriorityElement.value;
+  
+  console.log(filterValuePriority);
 
-    // let tasks = taskManager.getTasks();
 
 }
 
 document.querySelector("#applyFilter")!.addEventListener("submit", filtreTask);
+

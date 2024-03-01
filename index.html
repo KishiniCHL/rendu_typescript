@@ -84,9 +84,13 @@
 
 
         <div id="updateModal" class="modal">
+
             <div class="modal-content">
                 <h2>Modifier la tâche</h2>
+                <span class="close">&times;</span>
+
                 <form id="updateForm">
+                    <input type="hidden" id="updateTaskId">
                     <label for="updateTitle">Titre:</label>
                     <input id="updateTitle" type="text" name="title">
         
@@ -103,7 +107,7 @@
                         <option value="high">Haute</option>
                     </select>
         
-                    <input type="submit" value="Save">
+                    <input type="submit" value="Save" id="updateTaskButton">
                 </form>
             </div>
         </div>
