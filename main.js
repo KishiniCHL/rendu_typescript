@@ -1,38 +1,25 @@
 console.log("slt c moi");
-class TaskManager {
-    //definition des attributs pour la classe TaskManager
-    tasks = [];
-    //ajouter une tache
-    addTask(task) {
-        this.tasks.push(task);
-    }
-    deleteTask(taskId) {
-        this.tasks = this.tasks.filter(task => task.id !== taskId);
-    }
-    updateTask(taskId, title, description, date, etat) {
-        let task = this.tasks.find(task => task.id === taskId);
-        if (task) {
-            task.titre = title;
-            task.description = description;
-            task.date = date;
-            task.etat = etat;
-        }
-    }
-    getTasks() {
-        return this.tasks;
-    }
-}
-// class CategoryManager{
-//     private categories: Category[] = [];
-//     addCategory(category: Category){
-//         this.categories.push(category);
-//     }
-//     getCategories(){
-//         return this.categories;
-//     }
-// }
+import { TaskManager } from "./modules/TaskManager.js";
 let taskManager = new TaskManager();
-// let categoryManager = new CategoryManager();
+let title;
+let description;
+let date;
+let etat;
+document.querySelector("#taskForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+    // Move these lines inside the event handler
+    title = document.querySelector("#taskTitle").value;
+    description = document.querySelector("#taskDescription").value;
+    date = new Date(document.querySelector("#taskDueDate").value);
+    etat = document.querySelector("#taskPriority").value;
+    if (title && description && date && etat) {
+        createNewTask(title, description, date, etat);
+        envoieFormulaire(event);
+    }
+    else {
+        alert("Veuillez remplir tous les champs");
+    }
+});
 function createNewTask(title, description, date, etat) {
     let newTask = {
         id: taskManager.getTasks().length + 1,
@@ -45,6 +32,8 @@ function createNewTask(title, description, date, etat) {
 }
 function createTaskElement(newTask, etatString) {
     let taskDiv = document.createElement("div");
+    let date = new Date(newTask.date);
+    let isValidDate = !isNaN(date.getTime());
     taskDiv.className = `task ${newTask.etat}`;
     let h3 = document.createElement("h3");
     h3.textContent = `${newTask.titre} `;
@@ -53,7 +42,12 @@ function createTaskElement(newTask, etatString) {
     h3.appendChild(span);
     taskDiv.appendChild(h3);
     let dateP = document.createElement("p");
-    dateP.textContent = `Date d'échéance: ${newTask.date.toISOString().split("T")[0]}`;
+    if (isValidDate) {
+        dateP.textContent = `Date d'échéance: ${date.toISOString().split("T")[0]}`;
+    }
+    else {
+        dateP.textContent = `Date d'échéance: Invalid date`;
+    }
     taskDiv.appendChild(dateP);
     let descriptionP = document.createElement("p");
     descriptionP.textContent = `${newTask.description}`;
@@ -80,11 +74,6 @@ function createTaskElement(newTask, etatString) {
 // event preventDefault pour empecher le rechargement de la page quand on submit le form(ca auto recharge la page directement apres avoir appuyé sur submit)
 function envoieFormulaire(event) {
     event.preventDefault();
-    let title = document.querySelector("#taskTitle").value;
-    let description = document.querySelector("#taskDescription").value;
-    let date = new Date(document.querySelector("#taskDueDate").value);
-    let etat = document.querySelector("#taskPriority")
-        .value;
     let newTask = createNewTask(title, description, date, etat);
     //ajout de la tache à partir de la classe TaskManager
     taskManager.addTask(newTask);
@@ -105,18 +94,17 @@ function envoieFormulaire(event) {
     let tasksDiv = document.getElementById("tasks");
     tasksDiv.appendChild(taskElement);
 }
-function updateTask(event, taskId) {
-    event.preventDefault();
-    let title = document.querySelector("#updateTitle").value;
-    let description = document.querySelector("#updateDescription").value;
-    let date = new Date(document.querySelector("#updateDate").value);
-    let etat = document.querySelector("#updateEtat").value;
-    taskManager.updateTask(taskId, title, description, date, etat);
-    console.log(taskManager.getTasks());
-}
+// function updateTask(event: Event) {
+//   event.preventDefault();
+//   let title = (document.querySelector("#updateTitle") as HTMLInputElement).value;
+//   let description = (document.querySelector("#updateDescription") as HTMLInputElement).value;
+//   let date = new Date((document.querySelector("#updateDate") as HTMLInputElement).value);
+//   let etat = (document.querySelector("#updateEtat") as HTMLInputElement).value;
+//   taskManager.updateTask(taskId, title, description, date, etat);
+//   console.log(taskManager.getTasks());
+// }
 let updateForm = document.querySelector("#updateForm");
-updateForm.addEventListener("submit", updateTask);
-document.querySelector("#taskForm").addEventListener("submit", envoieFormulaire);
+// updateForm.addEventListener("submit", updateTask);
 //
 //FILTRES
 //
@@ -127,4 +115,3 @@ function filtreTask() {
     // let tasks = taskManager.getTasks();
 }
 document.querySelector("#applyFilter").addEventListener("submit", filtreTask);
-export {};
